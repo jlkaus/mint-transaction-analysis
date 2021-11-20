@@ -65,6 +65,7 @@ close $fh;
 
 my %account_cache = ();
 my @double_hit_account_events = ();
+my $double_hit_count = 0;
 sub determine_account {
     my ($account) = @_;
 
@@ -116,6 +117,7 @@ sub determine_tags {
         if(scalar @tag_hits > 1) {
             push @double_hit_tag_events, {in=>$desc, account=>$account, type=>$type, matches=>\@tag_hits};
             print "WARNING: Double desc hit: [$type] [$account] [$desc] => (".(join(";", map { join(",", @{$_}) } @tag_hits)).")\n";
+	    ++$double_hit_count;
        }
     }
 
@@ -180,7 +182,7 @@ printf "Account hits:         %d\n", $total_transactions - $account_nonhits;
 printf "Account non-hits:     %d\n", $account_nonhits;
 printf "Description hits:     %d\n", $total_transactions - $desc_nonhits;
 printf "Description non-hits: %d (%d credits(%d), %d debits(%d))\n", $desc_nonhits, $credit_nonhits, $unique_credit_nonhits, $debit_nonhits, $unique_debit_nonhits;
-
+printf "Description double-hits: %d\n", $double_hit_count;
 
 
 
